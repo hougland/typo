@@ -17,4 +17,11 @@ Feature: Edit Category
     And I should see "Cats"
     When I follow "Cats"
     Then I should see "Lorem Ipsum"
-    
+    And I fill in "category_name" with "Cats Are Great"
+    And I fill in "category_keywords" with "testing"
+    And I fill in "category_description" with "lots of tests"
+    And I press "Save"
+    Then I should be on the new admin category page
+    Then I should see "Cats Are Great"
+    When I follow "Cats Are Great"
+    Then I should see "lots of tests"
