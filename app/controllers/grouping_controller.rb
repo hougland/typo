@@ -25,7 +25,6 @@ class GroupingController < ContentController
 
   def index
     @noindex = set_noindex params[:page]
-    binding.pry
     self.groupings = grouping_class.page(params[:page]).per(100)
     @page_title = "#{self.class.to_s.sub(/Controller$/,'')}"
     @keywords = ""
