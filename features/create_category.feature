@@ -13,8 +13,7 @@ Feature: Create Categories
     And I fill in "category_keywords" with "Lorem Ipsum"
     And I fill in "category_description" with "Lorem Ipsum"
     And I press "Save"
-    Then I should be on the admin content page
-    When I go to the home page
+    Then I should be on the new admin category page
     Then I should see "Cats"
     When I follow "Cats"
     Then I should see "Lorem Ipsum"
