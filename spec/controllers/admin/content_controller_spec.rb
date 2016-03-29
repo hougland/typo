@@ -48,7 +48,7 @@ describe Admin::ContentController do
       response.should render_template('index')
       response.should be_success
     end
-    
+
     it 'should restrict to withdrawn articles' do
       article = Factory(:article, :state => 'withdrawn', :published_at => '2010-01-01')
       get :index, :search => {:state => 'withdrawn'}
@@ -56,7 +56,7 @@ describe Admin::ContentController do
       response.should render_template('index')
       response.should be_success
     end
-  
+
     it 'should restrict to withdrawn articles' do
       article = Factory(:article, :state => 'withdrawn', :published_at => '2010-01-01')
       get :index, :search => {:state => 'withdrawn'}
@@ -670,5 +670,60 @@ describe Admin::ContentController do
       end
 
     end
+
+    describe 'merge articles action' do
+      before :each do
+        @article1 = Factory(:article, title: "A very big article")
+        @article2 = Factory(:article)
+        @comment1 = Factory(:comment, article: @article1)
+        @comment2 = Factory(:comment, article: @article2)
+      end
+
+      context "while logged in as admin user" do
+        it "reduces total number of articles by 1" do
+          Article.count.should be == 3
+          # merge
+          Article.count.should be == 2
+        end
+
+        it "deletes second article" do
+          Article.where(title: "A big article").should exist
+          Article.where(title: "A very big article").should exist
+          # merge
+          Article.where(title: "A very big article").first.should exist
+          Article.where(title: "A big article").first.should_not exist
+        end
+
+        it "retains same number of comments" do
+          Comment.count.should be == 2
+          # merge
+          Comment.count.should be == 2
+        end
+
+        it "adds comments from merged article to first article" do
+        end
+
+        it "adds body of merged article to body of first article" do
+          @article1.body.should be == "A content with several data"
+          # merge
+          @article1.body.should be == "A content with several dataA content with several data"
+        end
+
+        it "retains author of first article" do
+        end
+
+        it "retains title of first article" do
+        end
+      end
+
+      context "while logged in as non-admin user" do
+        it "redirects to SOMETHING" do
+        end
+
+        it "shows flash error" do
+        end
+      end
+    end
+
   end
 end
