@@ -641,9 +641,9 @@ describe Article do
     end
 
     it "reduces total number of articles by 1" do
-      Article.count.should be == 3
-      @article1.merge_with(@article2.id)
       Article.count.should be == 2
+      @article1.merge_with(@article2.id)
+      Article.count.should be == 1
     end
 
     it "deletes second article" do
@@ -669,14 +669,14 @@ describe Article do
     it "adds body of merged article to body of first article" do
       @article1.body.should be == "A content with several data"
       @article1.merge_with(@article2.id)
-      @article1.body.should be == "A content with several dataA content with several data"
+      @article1.body.should be == "A content with several data\nA content with several data"
     end
 
     it "retains author of first article" do
-      expect(@article1.user.id).to eq 2
-      expect(@article2.user.id).to eq 1
+      expect(@article1.user.id).to eq 1
+      expect(@article2.user.id).to eq 2
       @article1.merge_with(@article2.id)
-      expect(@article1.user.id).to eq 2
+      expect(@article1.user.id).to eq 1
     end
 
     it "retains title of first article" do
