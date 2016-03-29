@@ -5,13 +5,13 @@ Feature: Merge Articles
 
   Background:
     Given the blog is set up
+    Given I am logged into the admin panel
     And I have an article named "Cats Are Great" with 1 comment by author "Ricky"
     And I have an article named "Why Cats Are Great" with 1 comment by author "Henri"
 
   Scenario: Admin user can merge articles
-    Given I am logged into the admin panel
-    And I click "All Articles"
-    And I click "[Article Title]"
+    When I follow "All Articles"
+    And I follow "Cats Are Great"
     And I fill in "[field?]" with "[other article's id]"
     And I press "Merge"
     Then I should be on the [which page?]

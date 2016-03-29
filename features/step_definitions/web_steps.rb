@@ -19,6 +19,10 @@
 #
 
 
+# <Article id: 1, user_id: 1, published: true, allow_pings: true, published_at: "2012-06-09 21:51:55", state: "published", settings: {"password"=>""}>,
+# <Article id: 3, user_id: nil, published: false, allow_pings: false, published_at: nil, state: nil, settings: {}>
+
+
 require 'uri'
 require 'cgi'
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
@@ -43,17 +47,6 @@ Given /^the blog is set up$/ do
                 :state => 'active'})
 end
 
-Given /^I have an article named "(.*?)" with (\d+) comment by author "(.*?)"$/ do |arg1, arg2, arg3|
-  article_args = { title: arg1, author: arg3 }
-  article = Article.create(article_args)
-  arg2 = arg2.to_i
-  arg2.times do
-    comment = Comment.new(author: "testing author", body: "testing")
-    comment.article = article
-    comment.save
-  end
-end
-
 And /^I am logged into the admin panel$/ do
   visit '/accounts/login'
   fill_in 'user_login', :with => 'admin'
@@ -63,6 +56,17 @@ And /^I am logged into the admin panel$/ do
     page.should have_content('Login successful')
   else
     assert page.has_content?('Login successful')
+  end
+end
+
+And /^I have an article named "(.*?)" with (\d+) comment by author "(.*?)"$/ do |arg1, arg2, arg3|
+  article_args = { title: arg1, author: arg3, published: true }
+  article = Article.create(article_args)
+  arg2 = arg2.to_i
+  arg2.times do
+    comment = Comment.new(author: "testing author", body: "testing")
+    comment.article = article
+    comment.save
   end
 end
 
