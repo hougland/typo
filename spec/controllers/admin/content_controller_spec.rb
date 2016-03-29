@@ -607,6 +607,61 @@ describe Admin::ContentController do
       end
     end
 
+    describe 'merge articles action' do
+      before :each do
+        @user = Factory(:user)
+        @article1 = Factory(:article, title: "A very big article", user: @user)
+        @article2 = Factory(:article)
+        @comment1 = Factory(:comment, article: @article1)
+        @comment2 = Factory(:comment, article: @article2)
+      end
+
+      it "reduces total number of articles by 1" do
+        Article.count.should be == 3
+        # merge
+        Article.count.should be == 2
+      end
+
+      it "deletes second article" do
+        expect(Article.where(title: "A very big article")).to exist
+        expect(Article.where(title: "A big article")).to exist
+        # merge
+        expect(Article.where(title: "A very big article")).to exist
+        expect(Article.where(title: "A big article")).to_not exist
+      end
+
+      it "retains same number of comments" do
+        Comment.count.should be == 2
+        # merge
+        Comment.count.should be == 2
+      end
+
+      it "adds comments from merged article to first article" do
+        expect(@article1.comments.count).to eq 1
+        # merge
+        expect(@article1.comments.count).to eq 2
+      end
+
+      it "adds body of merged article to body of first article" do
+        @article1.body.should be == "A content with several data"
+        # merge
+        @article1.body.should be == "A content with several dataA content with several data"
+      end
+
+      it "retains author of first article" do
+        expect(@article1.user.id).to eq 2
+        expect(@article2.user.id).to eq 1
+        # merge
+        expect(@article1.user.id).to eq 2
+      end
+
+      it "retains title of first article" do
+        expect(@article1.title).to eq "A very big article"
+        expect(@article2.title).to eq "A big article"
+        # merge
+        expect(@article1.title).to eq "A very big article"
+      end
+    end
   end
 
   describe 'with publisher connection' do
@@ -671,72 +726,20 @@ describe Admin::ContentController do
 
     end
 
-    describe 'merge articles action' do
+    describe "merge articles action" do
+
       before :each do
-        @user = Factory(:user)
-        @article1 = Factory(:article, title: "A very big article", user: @user)
-        @article2 = Factory(:article)
-        @comment1 = Factory(:comment, article: @article1)
-        @comment2 = Factory(:comment, article: @article2)
+        # merge
       end
 
-      context "while logged in as admin user" do
-        it "reduces total number of articles by 1" do
-          Article.count.should be == 3
-          # merge
-          Article.count.should be == 2
-        end
-
-        it "deletes second article" do
-          expect(Article.where(title: "A very big article")).to exist
-          expect(Article.where(title: "A big article")).to exist
-          # merge
-          expect(Article.where(title: "A very big article")).to exist
-          expect(Article.where(title: "A big article")).to_not exist
-        end
-
-        it "retains same number of comments" do
-          Comment.count.should be == 2
-          # merge
-          Comment.count.should be == 2
-        end
-
-        it "adds comments from merged article to first article" do
-          expect(@article1.comments.count).to eq 1
-          # merge
-          expect(@article1.comments.count).to eq 2
-        end
-
-        it "adds body of merged article to body of first article" do
-          @article1.body.should be == "A content with several data"
-          # merge
-          @article1.body.should be == "A content with several dataA content with several data"
-        end
-
-        it "retains author of first article" do
-          expect(@article1.user.id).to eq 2
-          expect(@article2.user.id).to eq 1
-          # merge
-          expect(@article1.user.id).to eq 2
-        end
-
-        it "retains title of first article" do
-          expect(@article1.title).to eq "A very big article"
-          expect(@article2.title).to eq "A big article"
-          # merge
-          expect(@article1.title).to eq "A very big article"
-        end
+      it "redirects to dashboard" do
+        expect(subject).to redirect_to("/admin/dashboard#index")
       end
 
-      context "while logged in as non-admin user" do
-        it "redirects to SOMETHING" do
-        end
-
-        it "shows flash error" do
-          # merge
-          # expect(admin/content_controller).to set_flash[:error].to("You are not an admin and cannot merge articles")
-        end
+      it "shows flash error" do
+        expect(flash[:error]).to be_present
       end
+      
     end
 
   end
