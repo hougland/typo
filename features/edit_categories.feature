@@ -1,7 +1,7 @@
 Feature: Edit Category
   As a blog administrator
   In order to share my thoughts with the world
-  I want to be able to create categories for my blog posts
+  I want to be able to edit categories for my blog posts
 
   Background:
     Given the blog is set up

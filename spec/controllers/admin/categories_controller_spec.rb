@@ -44,7 +44,7 @@ describe Admin::CategoriesController do
 
   it "test_update" do
     post :edit, :id => Factory(:category).id
-    assert_response :redirect, :action => 'index'
+    assert_response :redirect, :action => 'new'
   end
 
   describe "test_destroy with GET" do
