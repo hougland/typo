@@ -673,7 +673,8 @@ describe Admin::ContentController do
 
     describe 'merge articles action' do
       before :each do
-        @article1 = Factory(:article, title: "A very big article")
+        @user = Factory(:user)
+        @article1 = Factory(:article, title: "A very big article", user: @user)
         @article2 = Factory(:article)
         @comment1 = Factory(:comment, article: @article1)
         @comment2 = Factory(:comment, article: @article2)
@@ -687,11 +688,11 @@ describe Admin::ContentController do
         end
 
         it "deletes second article" do
-          Article.where(title: "A big article").should exist
-          Article.where(title: "A very big article").should exist
+          expect(Article.where(title: "A very big article")).to exist
+          expect(Article.where(title: "A big article")).to exist
           # merge
-          Article.where(title: "A very big article").first.should exist
-          Article.where(title: "A big article").first.should_not exist
+          expect(Article.where(title: "A very big article")).to exist
+          expect(Article.where(title: "A big article")).to_not exist
         end
 
         it "retains same number of comments" do
@@ -701,6 +702,9 @@ describe Admin::ContentController do
         end
 
         it "adds comments from merged article to first article" do
+          expect(@article1.comments.count).to eq 1
+          # merge
+          expect(@article1.comments.count).to eq 2
         end
 
         it "adds body of merged article to body of first article" do
@@ -710,9 +714,17 @@ describe Admin::ContentController do
         end
 
         it "retains author of first article" do
+          expect(@article1.user.id).to eq 2
+          expect(@article2.user.id).to eq 1
+          # merge
+          expect(@article1.user.id).to eq 2
         end
 
         it "retains title of first article" do
+          expect(@article1.title).to eq "A very big article"
+          expect(@article2.title).to eq "A big article"
+          # merge
+          expect(@article1.title).to eq "A very big article"
         end
       end
 
@@ -721,6 +733,8 @@ describe Admin::ContentController do
         end
 
         it "shows flash error" do
+          # merge
+          # expect(admin/content_controller).to set_flash[:error].to("You are not an admin and cannot merge articles")
         end
       end
     end
