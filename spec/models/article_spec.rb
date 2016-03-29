@@ -184,25 +184,25 @@ describe Article do
   ### XXX: Should we have a test here?
   it "test_send_multiple_pings" do
   end
-  
+
   describe "Testing redirects" do
     it "a new published article gets a redirect" do
       a = Article.create(:title => "Some title", :body => "some text", :published => true)
       a.redirects.first.should_not be_nil
       a.redirects.first.to_path.should == a.permalink_url
     end
-    
-    it "a new unpublished article should not get a redirect" do 
+
+    it "a new unpublished article should not get a redirect" do
       a = Article.create(:title => "Some title", :body => "some text", :published => false)
       a.redirects.first.should be_nil
     end
-    
+
     it "Changin a published article permalink url should only change the to redirection" do
       a = Article.create(:title => "Some title", :body => "some text", :published => true)
       a.redirects.first.should_not be_nil
       a.redirects.first.to_path.should == a.permalink_url
       r  = a.redirects.first.from_path
-      
+
       a.permalink = "some-new-permalink"
       a.save
       a.redirects.first.should_not be_nil
@@ -571,7 +571,7 @@ describe Article do
     describe "#find_by_permalink" do
       it "uses UTC to determine correct day" do
         @a.save
-        a = Article.find_by_permalink :year => 2011, :month => 2, :day => 21, :permalink => 'a-big-article' 
+        a = Article.find_by_permalink :year => 2011, :month => 2, :day => 21, :permalink => 'a-big-article'
         a.should == @a
       end
     end
@@ -592,7 +592,7 @@ describe Article do
     describe "#find_by_permalink" do
       it "uses UTC to determine correct day" do
         @a.save
-        a = Article.find_by_permalink :year => 2011, :month => 2, :day => 22, :permalink => 'a-big-article' 
+        a = Article.find_by_permalink :year => 2011, :month => 2, :day => 22, :permalink => 'a-big-article'
         a.should == @a
       end
     end
@@ -630,5 +630,61 @@ describe Article do
     end
 
   end
-end
 
+  describe "merge_with" do
+    before :each do
+      @user2 = Factory(:user)
+      @article1 = Factory(:article, title: "A very big article", user: @user2)
+      @article2 = Factory(:article)
+      @comment1 = Factory(:comment, article: @article1)
+      @comment2 = Factory(:comment, article: @article2)
+    end
+
+    it "reduces total number of articles by 1" do
+      Article.count.should be == 3
+      @article1.merge_with(@article2.id)
+      Article.count.should be == 2
+    end
+
+    it "deletes second article" do
+      expect(Article.where(title: "A very big article")).to exist
+      expect(Article.where(title: "A big article")).to exist
+      @article1.merge_with(@article2.id)
+      expect(Article.where(title: "A very big article")).to exist
+      expect(Article.where(title: "A big article")).to_not exist
+    end
+
+    it "retains same number of comments" do
+      Comment.count.should be == 2
+      @article1.merge_with(@article2.id)
+      Comment.count.should be == 2
+    end
+
+    it "adds comments from merged article to first article" do
+      expect(@article1.comments.count).to eq 1
+      @article1.merge_with(@article2.id)
+      expect(@article1.comments.count).to eq 2
+    end
+
+    it "adds body of merged article to body of first article" do
+      @article1.body.should be == "A content with several data"
+      @article1.merge_with(@article2.id)
+      @article1.body.should be == "A content with several dataA content with several data"
+    end
+
+    it "retains author of first article" do
+      expect(@article1.user.id).to eq 2
+      expect(@article2.user.id).to eq 1
+      @article1.merge_with(@article2.id)
+      expect(@article1.user.id).to eq 2
+    end
+
+    it "retains title of first article" do
+      expect(@article1.title).to eq "A very big article"
+      expect(@article2.title).to eq "A big article"
+      @article1.merge_with(@article2.id)
+      expect(@article1.title).to eq "A very big article"
+    end
+  end
+
+end

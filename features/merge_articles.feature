@@ -14,7 +14,7 @@ Feature: Merge Articles
     And I should see "Cats Are Great"
     And I should see "Why Cats Are Great"
     And I follow "Cats Are Great"
-    And I fill in "article_id" with "4"
+    And I fill in "merge_with" with "4"
     And I press "Merge"
     Then I should be on the admin content page
     And I should see "Cats Are Great"
