@@ -18,11 +18,6 @@
 # * http://elabs.se/blog/15-you-re-cuking-it-wrong
 #
 
-
-# <Article id: 1, user_id: 1, published: true, allow_pings: true, published_at: "2012-06-09 21:51:55", state: "published", settings: {"password"=>""}>,
-# <Article id: 3, user_id: nil, published: false, allow_pings: false, published_at: nil, state: nil, settings: {}>
-
-
 require 'uri'
 require 'cgi'
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
@@ -59,11 +54,11 @@ And /^I am logged into the admin panel$/ do
   end
 end
 
-And /^I have an article named "(.*?)" with (\d+) comment by author "(.*?)"$/ do |arg1, arg2, arg3|
-  article_args = { title: arg1, author: arg3, published: true }
+And /^I have an article named "(.*?)" by author "(.*?)" with body "(.*?)" and with (\d+) comment$/ do |arg1, arg2, arg3, arg4|
+  article_args = { title: arg1, author: arg2, body: arg3, published: true }
   article = Article.create(article_args)
-  arg2 = arg2.to_i
-  arg2.times do
+  arg4 = arg2.to_i
+  arg4.times do
     comment = Comment.new(author: "testing author", body: "testing")
     comment.article = article
     comment.save
