@@ -43,6 +43,17 @@ Given /^the blog is set up$/ do
                 :state => 'active'})
 end
 
+Given /^I have an article named "(.*?)" with (\d+) comment by author "(.*?)"$/ do |arg1, arg2, arg3|
+  article_args = { title: arg1, author: arg3 }
+  article = Article.create(article_args)
+  arg2 = arg2.to_i
+  arg2.times do
+    comment = Comment.new(author: "testing author", body: "testing")
+    comment.article = article
+    comment.save
+  end
+end
+
 And /^I am logged into the admin panel$/ do
   visit '/accounts/login'
   fill_in 'user_login', :with => 'admin'

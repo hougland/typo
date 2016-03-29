@@ -5,8 +5,8 @@ Feature: Merge Articles
 
   Background:
     Given the blog is set up
-    And an article named "Cats Are Great" with 1 comment
-    And an article named "Why Cats Are Great" with 1 comment
+    And I have an article named "Cats Are Great" with 1 comment by author "Ricky"
+    And I have an article named "Why Cats Are Great" with 1 comment by author "Henri"
 
   Scenario: Admin user can merge articles
     Given I am logged into the admin panel
