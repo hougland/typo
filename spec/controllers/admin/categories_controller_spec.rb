@@ -34,11 +34,34 @@ describe Admin::CategoriesController do
     end
   end
 
-  describe "test_new" do
-    it "renders 'new' template" do
+  it "test_new" do
+    get :new
+    response.should be_success
+    assert_template 'new'
+  end
+
+  describe "new_or_edit" do
+    it "@category will not be nil" do
+      get :new
+      assigns(:category).should_not be_nil
+    end
+
+    it "renders new template" do
       get :new
       response.should be_success
       assert_template 'new'
+    end
+  end
+
+  describe "save_category" do
+    it "upon successful save, flashes notice" do
+      post :new, :id => Factory(:category).id
+      assert_equal 'Category was successfully saved.', flash[:notice]
+    end
+
+    it "renders new template" do
+      post :new, :id => Factory(:category).id
+      assert_redirected_to action: "new"
     end
   end
 
