@@ -423,12 +423,15 @@ class Article < Content
 
     @merge_in_article.comments.each do |comment|
       comment.article = self
+      comment.save
     end
 
     @merge_in_article.reload
     @merge_in_article.delete
 
-    return self.save
+    self.save
+
+    return self
   end
 
   protected

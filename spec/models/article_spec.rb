@@ -640,6 +640,12 @@ describe Article do
       @comment2 = Factory(:comment, article: @article2)
     end
 
+    it "adds body of merged article to body of first article" do
+      @article1.body.should be == "A content with several data"
+      @article1.merge_with(@article2.id)
+      @article1.body.should be == "A content with several data\nA content with several data"
+    end
+
     it "reduces total number of articles by 1" do
       Article.count.should be == 2
       @article1.merge_with(@article2.id)
@@ -664,12 +670,6 @@ describe Article do
       expect(@article1.comments.count).to eq 1
       @article1.merge_with(@article2.id)
       expect(@article1.comments.count).to eq 2
-    end
-
-    it "adds body of merged article to body of first article" do
-      @article1.body.should be == "A content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data"
-      @article1.merge_with(@article2.id)
-      @article1.body.should be == "A content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data"
     end
 
     it "retains author of first article" do
