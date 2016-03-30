@@ -151,7 +151,7 @@ class Admin::ContentController < Admin::BaseController
         get_fresh_or_existing_draft_for_article
       elsif params[:merge_with]
         @article = @article.merge_with(params[:merge_with].to_i)
-        binding.pry
+        params[:article]["body_and_extended"] = @article.body
       else
         if not @article.parent_id.nil?
           @article = Article.find(@article.parent_id)
@@ -161,7 +161,6 @@ class Admin::ContentController < Admin::BaseController
 
     @article.keywords = Tag.collection_to_string @article.tags
     @article.attributes = params[:article]
-    binding.pry
     # TODO: Consider refactoring, because double rescue looks... weird.
 
     @article.published_at = DateTime.strptime(params[:article][:published_at], "%B %e, %Y %I:%M %p GMT%z").utc rescue Time.parse(params[:article][:published_at]).utc rescue nil

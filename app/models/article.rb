@@ -427,10 +427,12 @@ class Article < Content
         comment.save
       end
 
-      @merge_in_article.reload
+      self.save # why is this not saving in the database? something about a parent_id?
+
+binding.pry
       @merge_in_article.delete
 
-      self.save
+binding.pry
     end
 
     return self
