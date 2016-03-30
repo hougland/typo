@@ -417,19 +417,21 @@ class Article < Content
   end
 
   def merge_with(other_article_id)
-    @merge_in_article = Article.find(other_article_id)
+    @merge_in_article = Article.find_by_id(other_article_id)
 
-    self.body << "\n#{@merge_in_article.body}"
+    if @merge_in_article
+      self.body << "\n#{@merge_in_article.body}"
 
-    @merge_in_article.comments.each do |comment|
-      comment.article = self
-      comment.save
+      @merge_in_article.comments.each do |comment|
+        comment.article = self
+        comment.save
+      end
+
+      @merge_in_article.reload
+      @merge_in_article.delete
+
+      self.save
     end
-
-    @merge_in_article.reload
-    @merge_in_article.delete
-
-    self.save
 
     return self
   end
