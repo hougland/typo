@@ -418,7 +418,6 @@ class Article < Content
 
   def merge_with(other_article_id)
     @merge_in_article = Article.find(other_article_id)
-    binding.pry
 
     self.body << "\n#{@merge_in_article.body}"
 
@@ -428,8 +427,6 @@ class Article < Content
 
     @merge_in_article.reload
     @merge_in_article.delete
-
-    binding.pry
 
     return self.save
   end

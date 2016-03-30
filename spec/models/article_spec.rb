@@ -667,14 +667,14 @@ describe Article do
     end
 
     it "adds body of merged article to body of first article" do
-      @article1.body.should be == "A content with several data"
+      @article1.body.should be == "A content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data"
       @article1.merge_with(@article2.id)
-      @article1.body.should be == "A content with several data\nA content with several data"
+      @article1.body.should be == "A content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data\nA content with several data"
     end
 
     it "retains author of first article" do
       expect(@article1.user.id).to eq 1
-      expect(@article2.user.id).to eq 2
+      expect(@article2.user.id).to eq 1
       @article1.merge_with(@article2.id)
       expect(@article1.user.id).to eq 1
     end
